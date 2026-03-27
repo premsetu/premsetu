@@ -1,0 +1,17 @@
+{
+  "name": "premsetu",
+  "private": true,
+  "scripts": {
+    "install:all": "npm install --prefix server && npm install --prefix client",
+    "dev": "concurrently \"npm run dev --prefix server\" \"npm start --prefix client\"",
+    "server": "npm run dev --prefix server",
+    "client": "npm start --prefix client",
+    "build": "npm run build --prefix client"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2"
+  }
+}
