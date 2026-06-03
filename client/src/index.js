@@ -13,7 +13,30 @@ root.render(
     <BrowserRouter>
       <AuthProvider>
         <App />
-        <Toaster position="top-right" />
+        <Toaster
+          position="top-right"
+          toastOptions={{
+            style: {
+              borderRadius: "18px",
+              border: "1px solid rgba(59, 74, 58, 0.12)",
+              background: "rgba(255, 253, 249, 0.95)",
+              color: "#2f392f",
+              boxShadow: "0 18px 40px rgba(38, 49, 37, 0.14)"
+            },
+            success: {
+              iconTheme: {
+                primary: "#3b4a3a",
+                secondary: "#f0ede6"
+              }
+            },
+            error: {
+              iconTheme: {
+                primary: "#b88968",
+                secondary: "#fffdf9"
+              }
+            }
+          }}
+        />
       </AuthProvider>
     </BrowserRouter>
   </React.StrictMode>

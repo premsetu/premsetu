@@ -37,30 +37,51 @@ const ViewProfile = () => {
     <section className="page-shell">
       <div className="profile-header">
         <div className="profile-main">
-          <img
-            src={profile.profilePhoto || "https://placehold.co/240x240/F1FAEE/E63946?text=PremSetu"}
-            alt={profile.fullName}
-          />
-          <div>
+          <div className="profile-photo-frame">
+            <img
+              src={profile.profilePhoto || "https://placehold.co/320x360/F0EDE6/3B4A3A?text=PremSetu"}
+              alt={profile.fullName}
+            />
+          </div>
+
+          <div className="profile-summary">
             <span className="eyebrow">Member Profile</span>
             <h1>{profile.fullName}</h1>
-            <p>
+            <p className="detail-line">
               {profile.city || "City not added"}, {profile.state || "State not added"}
             </p>
             <p>{profile.bio || "This member is still building their profile."}</p>
-            <div className="card-actions">
-              {matched ? (
-                <Link className="primary-button" to={`/chat/${profile._id}`}>
-                  Chat Now
-                </Link>
-              ) : (
-                <button className="primary-button" onClick={handleInterest} disabled={alreadyInterested}>
-                  {alreadyInterested ? "Already Interested" : "Send Interest"}
-                </button>
-              )}
+
+            <div className="profile-badges">
+              <span className="chip">{profile.religion || "Religion pending"}</span>
+              <span className="chip">{profile.motherTongue || "Language pending"}</span>
+              <span className="chip">{profile.maritalStatus || "Never married"}</span>
             </div>
           </div>
         </div>
+
+        <div className="profile-side-panel">
+          <span className="eyebrow">Connection</span>
+          <h3>{matched ? "You are matched" : "Interested in this profile?"}</h3>
+          <p className="muted-copy">
+            If the profile feels right, send interest. If both sides are interested, private chat opens automatically.
+          </p>
+
+          {matched ? (
+            <Link className="primary-button full-width" to={`/chat/${profile._id}`}>
+              Chat Now
+            </Link>
+          ) : (
+            <button className="primary-button full-width" onClick={handleInterest} disabled={alreadyInterested}>
+              {alreadyInterested ? "Already Interested" : "Send Interest"}
+            </button>
+          )}
+        </div>
+      </div>
+
+      <div className="section-heading">
+        <span>Profile Details</span>
+        <h2>Key details for clarity and family fit</h2>
       </div>
 
       <div className="details-grid">
@@ -80,6 +101,13 @@ const ViewProfile = () => {
             <strong>{value || "Not added yet"}</strong>
           </div>
         ))}
+      </div>
+
+      <div className="section-heading inline-heading">
+        <div>
+          <span>Gallery</span>
+          <h2>Member photos</h2>
+        </div>
       </div>
 
       <div className="gallery-grid">

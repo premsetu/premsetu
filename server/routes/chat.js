@@ -11,6 +11,15 @@ const ensureMatch = async (userId, otherUserId) => {
   return user?.matches.some((id) => id.toString() === otherUserId);
 };
 
+router.get("/unread-count", authMiddleware, async (req, res) => {
+  try {
+    const count = await Message.countDocuments({ receiver: req.userId, isRead: false });
+    return res.json({ count });
+  } catch (error) {
+    return res.status(500).json({ message: "Could not fetch unread count." });
+  }
+});
+
 router.get("/:userId", authMiddleware, async (req, res) => {
   try {
     const otherUserId = req.params.userId;

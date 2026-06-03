@@ -11,6 +11,8 @@ import EditProfile from "./pages/EditProfile";
 import Matches from "./pages/Matches";
 import ViewProfile from "./pages/ViewProfile";
 import Chat from "./pages/Chat";
+import ChatList from "./pages/ChatList";
+import NotFound from "./pages/NotFound";
 
 const App = () => (
   <div className="app-shell">
@@ -60,6 +62,14 @@ const App = () => (
         }
       />
       <Route
+        path="/chat-list"
+        element={
+          <ProtectedRoute>
+            <ChatList />
+          </ProtectedRoute>
+        }
+      />
+      <Route
         path="/chat/:userId"
         element={
           <ProtectedRoute>
@@ -67,6 +77,7 @@ const App = () => (
           </ProtectedRoute>
         }
       />
+      <Route path="*" element={<NotFound />} />
     </Routes>
     <Footer />
   </div>

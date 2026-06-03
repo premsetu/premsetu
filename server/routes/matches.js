@@ -6,20 +6,6 @@ const { escapeRegex, sanitizeSuggestionFilters } = require("../utils/validation"
 
 const router = express.Router();
 
-const getAgeFromDob = (dateOfBirth) => {
-  if (!dateOfBirth) return null;
-  const today = new Date();
-  const dob = new Date(dateOfBirth);
-  let age = today.getFullYear() - dob.getFullYear();
-  const monthDiff = today.getMonth() - dob.getMonth();
-
-  if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < dob.getDate())) {
-    age -= 1;
-  }
-
-  return age;
-};
-
 router.get("/suggestions", authMiddleware, async (req, res) => {
   try {
     const { page, limit, religion, state, city, education, profession, minAge, maxAge } =
@@ -49,28 +35,33 @@ router.get("/suggestions", authMiddleware, async (req, res) => {
     if (education) query.education = new RegExp(escapeRegex(education), "i");
     if (profession) query.profession = new RegExp(escapeRegex(profession), "i");
 
-    const rawUsers = await User.find(query)
-      .select("-password")
-      .sort({ createdAt: -1 });
-
-    const filteredUsers = rawUsers.filter((user) => {
-      const age = getAgeFromDob(user.dateOfBirth);
-      if (minAge && age < Number(minAge)) return false;
-      if (maxAge && age > Number(maxAge)) return false;
-      return true;
-    });
+    if (minAge || maxAge) {
+      const today = new Date();
+      const dobFilter = {};
+      if (maxAge) {
+        dobFilter.$gte = new Date(today.getFullYear() - maxAge, today.getMonth(), today.getDate());
+      }
+      if (minAge) {
+        dobFilter.$lte = new Date(today.getFullYear() - minAge, today.getMonth(), today.getDate());
+      }
+      query.dateOfBirth = dobFilter;
+    }
 
     const pageNumber = Number(page);
     const pageLimit = Number(limit);
-    const start = (pageNumber - 1) * pageLimit;
-    const paginatedUsers = filteredUsers.slice(start, start + pageLimit);
+    const skip = (pageNumber - 1) * pageLimit;
+
+    const [users, total] = await Promise.all([
+      User.find(query).select("-password").sort({ createdAt: -1 }).skip(skip).limit(pageLimit),
+      User.countDocuments(query)
+    ]);
 
     return res.json({
-      users: paginatedUsers,
+      users,
       pagination: {
-        total: filteredUsers.length,
+        total,
         page: pageNumber,
-        pages: Math.ceil(filteredUsers.length / pageLimit) || 1
+        pages: Math.ceil(total / pageLimit) || 1
       }
     });
   } catch (error) {
